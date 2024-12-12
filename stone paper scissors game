@@ -1,0 +1,77 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+class RockPaperScissorsGame:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Rock, Paper, Scissors Game")
+
+        self.user_score = 0
+        self.computer_score = 0
+
+        self.user_choice_var = tk.StringVar()
+        self.computer_choice_var = tk.StringVar()
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        tk.Label(self.master, text="Choose:", font=('Arial', 14)).grid(row=0, column=0)
+
+        choices = ['Rock', 'Paper', 'Scissors']
+        for i, choice in enumerate(choices):
+            tk.Radiobutton(self.master, text=choice, variable=self.user_choice_var, value=choice).grid(row=0, column=i + 1)
+
+        tk.Button(self.master, text="Play", command=self.play_game).grid(row=1, column=0, columnspan=3, pady=10)
+
+        tk.Label(self.master, text="Result:", font=('Arial', 12)).grid(row=2, column=0, columnspan=3)
+        tk.Label(self.master, text="", textvariable=self.computer_choice_var, font=('Arial', 12)).grid(row=3, column=0, columnspan=3)
+        tk.Label(self.master, text="", textvariable=tk.StringVar(), font=('Arial', 12), foreground="green").grid(row=4, column=0, columnspan=3)
+
+        tk.Label(self.master, text="Score:", font=('Arial', 14)).grid(row=5, column=0)
+        tk.Label(self.master, text="User: 0", font=('Arial', 14)).grid(row=5, column=1)
+        tk.Label(self.master, text="Computer: 0", font=('Arial', 14)).grid(row=5, column=2)
+
+        tk.Button(self.master, text="Play Again", command=self.play_again).grid(row=6, column=0, columnspan=3, pady=10)
+
+    def play_game(self):
+        user_choice = self.user_choice_var.get()
+        computer_choice = random.choice(['Rock', 'Paper', 'Scissors'])
+
+        self.computer_choice_var.set(f"Computer chose: {computer_choice}")
+
+        result = self.determine_winner(user_choice, computer_choice)
+        tk.Label(self.master, text=result, font=('Arial', 12), foreground="green").grid(row=4, column=0, columnspan=3)
+
+        tk.Label(self.master, text=f"User: {self.user_score}", font=('Arial', 14)).grid(row=5, column=1)
+        tk.Label(self.master, text=f"Computer: {self.computer_score}", font=('Arial', 14)).grid(row=5, column=2)
+
+    def determine_winner(self, user_choice, computer_choice):
+        if user_choice == computer_choice:
+            return "It's a tie!"
+        elif (
+            (user_choice == 'Rock' and computer_choice == 'Scissors') or
+            (user_choice == 'Paper' and computer_choice == 'Rock') or
+            (user_choice == 'Scissors' and computer_choice == 'Paper')
+        ):
+            self.user_score += 1
+            return "You win!"
+        else:
+            self.computer_score += 1
+            return "Computer wins!"
+
+    def play_again(self):
+        self.user_score = 0
+        self.computer_score = 0
+        self.user_choice_var.set("")
+        self.computer_choice_var.set("")
+        for widget in self.master.winfo_children():
+            widget.destroy()
+        self.create_widgets()
+
+# Create the main window
+root = tk.Tk()
+game = RockPaperScissorsGame(root)
+
+# Run the application
+root.mainloop()
